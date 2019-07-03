@@ -1,0 +1,31 @@
+version: "3"
+services:
+  magnificent:
+    build: ./magnificent
+    command: python ./magnificent/server.py
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "12345:12345"
+  monitor-api:
+    build: ./monitor-api
+    command: node ./monitor-api/index.js
+    volumes:
+      - .:/usr/app
+      - /usr/app/node_modules
+    ports:
+      - "5000:5000"
+    depends_on:
+      - magnificent
+  monitor-ui:
+    build: ./monitor-ui
+    command: npm start
+    volumes:
+      - ./monitor-ui:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - monitor-api
